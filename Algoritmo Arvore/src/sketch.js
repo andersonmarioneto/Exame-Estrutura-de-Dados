@@ -3,7 +3,6 @@
 var CANVASWIDTH = window.innerWidth;
 var CANVASHEIGHT = window.innerHeight;
 
-// Constants for controlling the position of the binary tree
 const TREEX = CANVASWIDTH / 2;     // The x-coordinate of the root node
 const TREEY = 100;                 // The y-coordinate of the root node
 const BACKGROUNDCOLOR = color(30); // Background color of the visualization

@@ -1,27 +1,6 @@
-/***
- * Node.js
- *
- * This file defines the Node class. Nodes serve as the building blocks of the
- * binary tree. The Node has basic data structure properties that would be
- * required of a non-visual node object. This includes storing its value, and
- * storing references to its left and right children. A node is said to be
- * filled if it contains a value other than null. When a node is filled, it will
- * create two empty (not filled) nodes as it children. This allows recursive
- * calls to simply check if the node being processed is filled, rather than
- * checking that each left and right child of a node has been defined.
- *
- * Nodes also store information that is necessary to visualize them. This
- * includes all the properties of the appearance of the circle which represents
- * the node (e.g. size, color, outline), as well as properties that are
- * necessary to visualize the edge connecting the node to its parent.
-***/
+
 
 class Node {
-    // Note: this section uses the static keyword to define static properties.
-    // Although perhaps not the intended function, it makes defining static
-    // properties much more readable than adding them at the end
-
-    // Constants that control the default appearance of the nodes
     static SIZE = 20;                    // Diameter of the nodes
     static COLOR = color(255, 255, 255); // Fill color of the nodes
     static STROKE = color(0, 0, 0, 0);   // Outline color of the nodes
@@ -30,14 +9,13 @@ class Node {
     static EDGECOLOR = color(0, 0, 0);   // Color of this node's upper edge
     static EDGETHICKNESS = 2;            // Thickness this node's upper edge
 
-    // Color-related constants for visualization purposes
+    
     static VISITED = color(0, 0, 255);  // Color when this node has been visited
     static SUCCESS = color(0, 255, 0);  // Color when this node was added/the
                                         //   value inside was being searched for
     static FAILURE = color(255, 0, 0);  // Color when the value being searched
                                         //   for is not found in this node
 
-    // Constants controlling the positions of the nodes relative to one another
     static HORIZONTALSPACING = 15; // Horizontal distance between two nodes
     static VERTICALSPACING = 50;   // Vertical distance between tow nodes
 
@@ -47,9 +25,8 @@ class Node {
                  edgeColor = Node.EDGECOLOR,
                  edgeThickness = Node.EDGETHICKNESS) {
 
-        this.value = null;     // The value this node is holding
+        this.value = null;   
 
-        // Reference to left/right children on this node
         this.leftNode = null;
         this.rightNode = null;
 
@@ -93,16 +70,7 @@ class Node {
         return this.parent !== null;
     }
 
-    /***
-     * Adds the specified value to the structure at or below this node
-     *
-     * Returns: The highest-level node whose coordinates (and children's
-     * coordinates) must be adjusted to account for the addition of the new node.
-     *
-     * Returning the highest-level that needs to be adjusted increases
-     * performance, because the coordinates of only a subset of the tree must
-     * be recalculated
-    ***/
+
     addValue(value) {
         if (!this.isFilled()) {
             // If the node hasn't been filled yet, fill this node with the value
@@ -123,9 +91,6 @@ class Node {
             // Add this value to the left half of the tree
             var shiftedNode = this.leftNode.addValue(value);
 
-            // To prevent overlapping nodes, the left child should be offset
-            // slightly farther to the left than all the space taken up to the
-            // right of the left node
             this.leftSpacing = this.leftNode.cumulativeRightSpacing
                 + Node.HORIZONTALSPACING;
 
@@ -133,22 +98,13 @@ class Node {
             this.cumulativeLeftSpacing = this.leftNode.cumulativeLeftSpacing
                 + this.leftSpacing;
 
-            // If this node's left spacing changed, then the coordinates of its
-            // left child must be updated to account for this change, so return
-            // the left child
             if(this.leftSpacing !== initialLeftSpacing) {
                 return this.leftNode;
             }
 
-            // If the left spacing didn't change, return the lower node that
-            // needs to be adjusted
             return shiftedNode;
 
         } else if(value > this.value){
-            // The value is greater than this node's value, so it belongs to the left
-
-            // The code below parallels the code above, but handles adding nodes
-            // to the right half of this node
 
             var rightSpacing = this.rightNode.cumulativeLeftSpacing
                 + Node.HORIZONTALSPACING;
@@ -169,12 +125,6 @@ class Node {
         }
     }
 
-    // Recursively sets the coordinates of this node and all nodes below it.
-    // If no coordinates are supplied, the coordinates are based on the parent
-    // node's location and spacing. If coordinates are supplied, the coordinates
-    // are se to the specified values.
-    // This function is called by the Tree class after a value is inserted
-    // to position the nodes in the tree correctly
     setCoordinates(x, y) {
         if(this.isFilled()) {
             if(typeof x === "undefined" && typeof y === "undefined") {
@@ -200,11 +150,7 @@ class Node {
         }
     }
 
-    /***
-     * Recursively searches the tree for the specified value
-     *
-     * Returns: Boolean; if value was found in the tree (true) or not (false)
-    ***/
+
     search(value) {
         if (!this.isFilled()) {
             return false;
@@ -242,10 +188,6 @@ class Node {
         this.graphicsBuffer.text(this.value, this.x, this.y + 1);
     }
 
-    // Recursively draws this node and all nodes below it
-    // Note: the parent of the node originally calling this function must be
-    // redrawn, because the edge will cover the parent node. Use redraw()
-    // if you want to redraw a single node
     draw() {
         if(this.isFilled()) {
             this.leftNode.draw();
@@ -269,8 +211,7 @@ class Node {
         }
     }
 
-    // Recursively sets the color and edge color of this node and all nodes
-    // below it to the specified color
+
     recursivePaint(color) {
         if(this.isFilled()) {
             this.color = color;
@@ -289,8 +230,7 @@ class Node {
         this.redraw();
     }
 
-    // Recursively set the appearnace of this node and all nodes below it to
-    // defaults for the class
+
     resetVisuals() {
         if(this.isFilled()) {
             this.size = Node.SIZE;

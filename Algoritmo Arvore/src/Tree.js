@@ -1,15 +1,4 @@
-/***
- * Tree.js
- *
- * This file defines the Tree class. The Tree class serves as a wrapper for a
- * root node, wrapping methods such as addValue or search, but also provides
- * higher-level functionality, such as setting the coordinates of the entire
- * tree, or drawing the entire tree.
- *
- * The tree class is also responsible for animating itself, and relies only
- * on an instance of the Controls class to provide the interval between frames
- * of animation
-***/
+
 
 class Tree {
     constructor(x, y, backgroundColor) {
@@ -38,8 +27,6 @@ class Tree {
         this.draw();
     }
 
-    // Sets this instance's reference to a Controls instance so that an
-    // animation interval can be set
     bindControls(controls) {
         this.controls = controls;
     }
@@ -73,8 +60,6 @@ class Tree {
         this.draw();
     }
 
-    // Wraps the Node class's addValue method, and sets the coordinate of the
-    // subset of the tree that needs to be adjusted after the value was added
     addValue(value) {
         var shiftedNode = this.root.addValue(value);
 
@@ -86,9 +71,6 @@ class Tree {
         return this.root.search(value);
     }
 
-    // Wraps the Node class's setCoordinates method. Sets the root's position
-    // to the x and y coordinates of the tree, or allows nodes to determine
-    // their own position based off their parents (by passing no arguments)
     setCoordinates(node) {
         if(node === this.root) {
             node.setCoordinates(this.x, this.y);
@@ -108,8 +90,6 @@ class Tree {
         this.updateDrawing();
     }
 
-    // Displays the tree without redrawing every node in the tree
-    // This function is used when the color of singular nodes are updated
     updateDrawing() {
         image(this.graphicsBuffer, 0, 0);
     }
@@ -121,10 +101,6 @@ class Tree {
         this.draw();
     }
 
-    // The first function called before an animation. Checks that no animation
-    // is currently running, and then initializes various properties to track
-    // the progress of the animation
-    // The frame argument is a function representing one frame of the animation
     startAnimation(frame, ...args) {
         if(this.running) {
             throw Error('Animation is currently running');
@@ -134,24 +110,17 @@ class Tree {
 
             this.resetVisuals();
 
-            // Bind the frame method here so it doesn't have to be bound
-            // when it is passed as an argument
             this.continueAnimation(frame.bind(this), ...args)
         }
     }
 
     // Schedules the next frame of the animation
     continueAnimation(frame, ...args) {
-        // Bind the frame function inside the method, so it doesnt have to be
-        // bound as an arguemtn
+
         this.timeout = setTimeout(() => frame.bind(this)(...args),
             this.controls.animationInterval);
     }
 
-    // The last function called to end an animation. Resets various properties
-    // tracking the progression of the animation so that a new animation can be
-    // run, and runs a specified function with specified arguments when the
-    // animation is complete
     stopAnimation(complete = () => {}, ...callbackArgs) {
         this.running = false;
         this.node = null;
@@ -161,15 +130,10 @@ class Tree {
         setTimeout(() => complete(...callbackArgs), this.controls.animationInterval);
     }
 
-    // Call for starting an addValue animation
-    // value is the value to add
-    // complete is a callback called when the animation finishes
     addValueVisual(value, complete = () => {}, ...callbackArgs) {
         this.startAnimation(this.addValueFrame, value, complete, ...callbackArgs);
     }
 
-    // Single frame for the addValue animation
-    // Arguments match addValueVisual
     addValueFrame(value, complete, ...callbackArgs) {
         if(!this.node.isFilled()) {
             this.addValue(value);          // Add the value to the data structure
@@ -198,16 +162,11 @@ class Tree {
         }
     }
 
-    // Call for starting the search animation
-    // value is the value to search for
-    // complete is a callback called when the animation finishes
     searchVisual(value, complete = () => {}, ...callbackArgs) {
         this.startAnimation(this.searchFrame, value, complete, ...callbackArgs);
         console.log('searching visually')
     }
 
-    // Single frame for the search animatino
-    // Arugment match serchVisual
     searchFrame(value, complete, ...callbackArgs) {
         if(this.node.color !== Node.VISITED) {
             // Mark the root node as visited first, then continue the search
@@ -264,19 +223,12 @@ class Tree {
         }
     }
 
-    // Call for starting the fill animation
-    // count is the number of nodes to add
-    // complete is a callback called when the animation finishes
     fillVisual(count, complete = () => {}) {
         this.clear();
 
         this.startAnimation(this.fillFrame, count, 0, complete);
     }
 
-    // Single frame of the fill animation
-    // count is the number of nodes to add
-    // filled is the number of nodes added so far
-    // complete is a callback called when the animation finishes
     fillFrame(count, filled, complete) {
         if(filled === count) {
             // Stop the animation if the correct number of nodes were inserted
@@ -287,9 +239,6 @@ class Tree {
 
             var value = this.uniqueRandom(count);
 
-            // Start the addValue animation, calling this frame again when the
-            // animation is complete, and incrementing the number of nodes
-            // filled so far
             this.startAnimation(this.addValueFrame, value,
                 this.fillFrame.bind(this), count, filled + 1, complete);
         }
