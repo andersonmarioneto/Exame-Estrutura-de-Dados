@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Visualização de Lista Ligada sem Repetição em JS</title>
+    <style>
+        /* Estilos simples para os elementos da lista */
+        
+        .list-container {
+            display: flex;
+            align-items: center;
+            margin-top: 20px;
+        }
+        
+        .list-item {
+            background-color: #f0f0f0;
+            border: 1px solid #ccc;
+            padding: 10px;
+            margin-right: 5px;
+            width: 100px;
+            text-align: center;
+        }
+    </style>
+</head>
+
+<body>
+    <h2>Lista Ligada</h2>
+    <div class="list-container" id="list-container">
+        <!-- Aqui serão adicionados dinamicamente os elementos da lista ligada -->
+    </div>
+    <br>
+    <button onclick="addToLinkedList()">Adicionar</button>
+    <button onclick="removeFromLinkedList()">Remover</button>
+    <script>
+        class Node {
+            constructor(value) {
+                this.value = value;
+                this.next = null;
+            }
+        }
+
+        let head = null;
+        let linkedListSet = new Set(); // Conjunto para verificar elementos únicos
+
+        function updateLinkedListView() {
+            const listContainer = document.getElementById('list-container');
+            listContainer.innerHTML = ''; // Limpa o conteúdo existente
+
+            let currentNode = head;
+            while (currentNode !== null) {
+                const listItemElement = document.createElement('div');
+                listItemElement.classList.add('list-item');
+                listItemElement.textContent = currentNode.value;
+                listContainer.appendChild(listItemElement);
+                currentNode = currentNode.next;
+            }
+        }
+
+        function addToLinkedList() {
+            const newValue = prompt('Digite um valor para adicionar à lista:');
+            if (newValue && !linkedListSet.has(newValue)) {
+                const newNode = new Node(newValue);
+                newNode.next = head;
+                head = newNode;
+                linkedListSet.add(newValue);
+                updateLinkedListView();
+            } else if (linkedListSet.has(newValue)) {
+                alert('Este valor já está na lista!');
+            }
+        }
+
+        function removeFromLinkedList() {
+            if (head !== null) {
+                const removedValue = head.value;
+                head = head.next;
+                linkedListSet.delete(removedValue);
+                updateLinkedListView();
+            } else {
+                alert('A lista está vazia!');
+            }
+        }
+    </script>
+</body>
+
+</html>
+
+</html>
